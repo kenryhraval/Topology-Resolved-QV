@@ -1,5 +1,4 @@
 from qiskit_experiments.library import QuantumVolume
-# from qiskit.transpiler import CouplingMap
 
 def quantum_volume(backend, ideal_backend, subset, shots, trials, seed):
     '''Runs the Quantum Volume experiment for a 
@@ -57,4 +56,4 @@ def quantum_volume_optimised(backend, ideal_backend, subset, shots, trials, seed
     )
 
     return exp.run(backend).block_for_results()
-    
+

@@ -8,3 +8,9 @@ presentation/*
 !presentation/build/
 presentation/build/*
 !presentation/build/main.pdf
+
+poster/*
+!poster/main.tex
+!poster/build/
+poster/build/*
+!poster/build/main.pdf

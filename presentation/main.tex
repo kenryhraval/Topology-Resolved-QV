@@ -79,6 +79,14 @@
 \end{frame}
 
 
+\begin{Qiskit experiments}
+    
+All experiments require a physical_qubits parameter as input that specifies which physical qubit or qubits the circuits will be executed on. The qubits must be given as a Python sequence (usually a tuple or a list).
+    
+
+\end{frame}
+
+
 \begin{frame}{Quantum volume (1)}
     Quantum volume (QV) is a \textbf{system level benchmark}.
     
@@ -109,6 +117,10 @@
     \begin{alertblock}{Problem}
         Quantum volume assesses only a limited subset of best-quality qubits within a quantum processor and does not provide a comprehensive measure of the overall fidelity or performance of quantum operations across the entire chip.
     \end{alertblock}
+\end{frame}
+
+\begin{frame}{Simulator}
+    First, if you want to model what the transpiler would do on the real device globally, then the full coupling map is more faithful. The transpiler uses the coupling map as a routing/optimization constraint, and transpilation is a multi-stage rewrite/optimization process. Giving it the full device graph versus only the induced subgraph can change the pass behavior and the final circuit, even if the final circuit still only touches the same qubits.
 \end{frame}
 
 

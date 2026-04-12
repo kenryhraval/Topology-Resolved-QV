@@ -1,0 +1,174 @@
+\documentclass[a0paper,portrait]{baposter}
+
+\usepackage{relsize}		% For \smaller
+\usepackage{url}			% For \url
+% \usepackage{epstopdf}	% Included EPS files automatically converted to PDF to include with pdflatex
+
+%%% Global Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\graphicspath{{pix/}}	% Root directory of the pictures 
+% \tracingstats=2			% Enabled LaTeX logging with conditionals
+
+%%% Color Definitions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\definecolor{bordercol}{RGB}{40,40,40}
+\definecolor{headercol1}{RGB}{186,215,230}
+\definecolor{headercol2}{RGB}{80,80,80}
+\definecolor{headerfontcol}{RGB}{0,0,0}
+\definecolor{boxcolor}{RGB}{186,215,230}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Utility functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Save space in lists. Use this after the opening of the list %%%%%%%%%%%%%%%%
+\newcommand{\compresslist}{
+	\setlength{\itemsep}{1pt}
+	\setlength{\parskip}{0pt}
+	\setlength{\parsep}{0pt}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Document Start %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\typeout{Poster rendering started}
+
+%%% Setting Background Image %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\background{
+	\begin{tikzpicture}[remember picture,overlay]%
+	\draw (current page.north west)+(-2em,2em) node[anchor=north west]
+	{\includegraphics[height=1.1\textheight]{images/background.pdf}};
+	\end{tikzpicture}
+}
+
+%%% General Poster Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% Eye Catcher, Title, Authors and University Images %%%%%%%%%%%%%%%%%%%%%%
+\begin{poster}{
+	grid=false,
+	% Option is left on true though the eyecatcher is not used. The reason is
+	% that we have a bit nicer looking title and author formatting in the headercol
+	% this way
+	%eyecatcher=false, 
+	borderColor=bordercol,
+	headerColorOne=headercol1,
+	headerColorTwo=headercol2,
+	headerFontColor=headerfontcol,
+	% Only simple background color used, no shading, so boxColorTwo isn't necessary
+	boxColorOne=boxcolor,
+	headershape=roundedright,
+	headerfont=\Large\sf\bf,
+	textborder=rectangle,
+	background=user,
+	headerborder=open,
+  boxshade=plain
+}
+%%% Eye Cacther %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+{
+	Eye Catcher, empty if option eyecatcher=false - unused
+}
+%%% Title %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+{\sf\bf
+	Topology-resolved quantum volume
+}
+%%% Authors %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+{
+	\vspace{1em} Henrijs Kravals, Maksims Dimitrijevs\\
+	{\smaller henrijs.kravals@lu.lv, maksims.dimitrijevs@lu.lv}
+}
+%%% Logo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+{
+% The logos are compressed a bit into a simple box to make them smaller on the result
+% (Wasn't able to find any bigger of them.)
+\setlength\fboxsep{0pt}
+    \begin{minipage}{14em}
+        \centering
+        \includegraphics[width=0.7\linewidth]{images/logo.pdf}
+    \end{minipage}
+}
+
+\headerbox{Problem}{name=problem,column=0,row=0}{
+\begin{itemize}\compresslist
+\item NISQ devices have useful scale, but are limited by noise and lack fault tolerance.
+\item Performance depends on qubit quality, connectivity, and compilation overhead.
+\item Therefore, system-level benchmarks are needed in addition to gate-level metrics.
+\end{itemize}
+ One such benchmark is quantum volume, which assesses only a limited subset of best-quality qubits within a quantum processor. We study how quantum volume depends on \emph{where} a circuit is placed on a chip, not only on the chip as a whole.
+}
+
+\headerbox{Quantum volume}{name=definitions,column=0,below=problem}{
+    Quantum volume (QV) is a \textbf{system level benchmark}. The QV is a single number figure of merit used to evaluate universal gate-based quantum computers. 
+
+
+    \begin{center}
+        \includegraphics[width=\linewidth]{images/qv-process.png}
+
+        \small The QV circuit~\cite{qv_benchmark_zoo}
+    \end{center}
+
+    If the quantum computer samples a distribution from the \textbf{heavy set of outputs} (simulated classically) with probability $> 2/3$, it validates the corresponding quantum volume score of $2^n$. The confidence interval for this evaluation is set to $2\sigma$ ($97.7\%$).
+}
+
+\headerbox{\emph{Heavy set of outputs}}{name=models,column=0,below=definitions}{
+    Let $\mathbf{Q}$ be a random circuit drawn from a suitable ensemble acting on $n$ qubits. The quantum state after executing the circuit is denoted $|\psi\rangle$. Each possible output state $x\in\{0,1\}^n$ is measured with probability $|\langle x|\psi\rangle|^2$. The set of output states with a probability greater than the median constitutes the heavy set of outputs associated with the quantum circuit $\mathbf{Q}$.
+}
+
+\headerbox{References}{name=references,column=0,below=models}{
+\smaller
+\vspace{-0.4em} 										% Save some space at the beginning
+\bibliographystyle{plain}							% Use plain style
+\renewcommand{\section}[2]{\vskip 0.05em}		% Omit "References" title
+\begin{thebibliography}{1}							% Simple bibliography with widest label of 1
+\itemsep=-0.01em										% Save space between the separation
+\setlength{\baselineskip}{0.4em}					% Save space with longer lines
+\bibitem{qv_benchmark_zoo}
+Quantum Benchmark Zoo:
+\emph{Quantum Volume}.
+Available at: \url{https://quantumbenchmarkzoo.org}
+(accessed 2026-04-12).
+\end{thebibliography}
+}
+
+\headerbox{Acknowledgements}{name=acknowledgements,column=0,below=references, above=bottom}{
+\smaller						% Make the whole text smaller
+\vspace{-0.4em}			% Save some space at the beginning
+TThis work was supported by the University of Latvia student research funding, aimed at promoting the involvement of 1st and 2nd year bachelor-level and short-cycle students in research activities at the Faculty of Science and Technology (EZTF). 
+} 
+
+\headerbox{Research methodology}{name=density,span=2,column=1,row=0}{
+We benchmarked QV on the IBM Marrakesh device using calibration data and the coupling graph from Qiskit. First, we construct a noisy quantum simulator from the extracted data. Then we enumerate all connected subgraphs of size $n \leq 6$ and run QV circuits on each subgraph. Finally, we compute the heavy output probability and confidence for each placement.
+}
+
+\headerbox{Productivity of qubit subsets varies significantly}
+{name=degreeDistribution,span=2,column=1,below=density,above=bottom}{
+
+\vspace{-0.2em}
+\begin{center}
+    \includegraphics[width=0.9\linewidth]{../results/aggregated_qv_grid.png}
+
+    \small Aggregated QV margin across subset sizes
+\end{center}
+\vspace{-0.2em}
+
+
+\vspace{-0.2em}
+\begin{center}
+    \includegraphics[width=0.9\linewidth]{../results/success_fraction_grid.png}
+
+    \small Success fraction of QV circuits across subset sizes
+
+\end{center}
+
+
+\vspace{-0.2em}
+\begin{center}
+    \includegraphics[width=0.9\linewidth,keepaspectratio]{../results/best_worst_grid.png}
+    
+    \small Best and worst performing subsets across subset sizes
+
+\end{center}
+
+}
+
+\end{poster}
+\end{document}
