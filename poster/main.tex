@@ -2,6 +2,7 @@
 
 \usepackage{relsize}		% For \smaller
 \usepackage{url}			% For \url
+\usepackage{adjustbox}
 % \usepackage{epstopdf}	% Included EPS files automatically converted to PDF to include with pdflatex
 
 %%% Global Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -99,11 +100,10 @@
 \headerbox{Quantum volume}{name=definitions,column=0,below=problem}{
     Quantum volume (QV) is a \textbf{system level benchmark}. The QV is a single number figure of merit used to evaluate universal gate-based quantum computers. 
 
-
     \begin{center}
         \includegraphics[width=\linewidth]{images/qv-process.png}
 
-        \small The QV circuit~\cite{qv_benchmark_zoo}
+        \small \textbf{The QV circuit~\cite{qv_benchmark_zoo}}
     \end{center}
 
     If the quantum computer samples a distribution from the \textbf{heavy set of outputs} (simulated classically) with probability $> 2/3$, it validates the corresponding quantum volume score of $2^n$. The confidence interval for this evaluation is set to $2\sigma$ ($97.7\%$).
@@ -132,7 +132,7 @@ Available at: \url{https://quantumbenchmarkzoo.org}
 \headerbox{Acknowledgements}{name=acknowledgements,column=0,below=references, above=bottom}{
 \smaller						% Make the whole text smaller
 \vspace{-0.4em}			% Save some space at the beginning
-TThis work was supported by the University of Latvia student research funding, aimed at promoting the involvement of 1st and 2nd year bachelor-level and short-cycle students in research activities at the Faculty of Science and Technology (EZTF). 
+This work was supported by the University of Latvia student research funding, aimed at promoting the involvement of 1st and 2nd year bachelor-level and short-cycle students in research activities at the Faculty of Science and Technology (EZTF). 
 } 
 
 \headerbox{Research methodology}{name=density,span=2,column=1,row=0}{
@@ -142,33 +142,52 @@ We benchmarked QV on the IBM Marrakesh device using calibration data and the cou
 \headerbox{Productivity of qubit subsets varies significantly}
 {name=degreeDistribution,span=2,column=1,below=density,above=bottom}{
 
-\vspace{-0.2em}
-\begin{center}
-    \includegraphics[width=0.9\linewidth]{../results/aggregated_qv_grid.png}
+	\begin{minipage}[t]{0.49\linewidth}
+	\vspace{0pt}
+		\includegraphics[width=\linewidth]{../results/best_worst_grid.pdf}
+		\small \textbf{The best and worst HOP wise performing subsets of different subset sizes.} Comparison makes the topology dependence clear: some regions of the chip are much better than others.
 
-    \small Aggregated QV margin across subset sizes
-\end{center}
-\vspace{-0.2em}
+		\vspace{0.6em}
 
+		\includegraphics[width=\linewidth]{../results/success_fraction_grid.pdf}
+		\small \textbf{Empiric probability that a qubit is part of a subset that passes the QV test over different subset sizes.} The success-fraction plot highlights that not all connected subsets of the same size perform equally well.
 
-\vspace{-0.2em}
-\begin{center}
-    \includegraphics[width=0.9\linewidth]{../results/success_fraction_grid.png}
+		\vspace{0.6em}
 
-    \small Success fraction of QV circuits across subset sizes
+		\includegraphics[width=\linewidth]{../results/qv_summary_stats.pdf}
+		\small \textbf{Statistics of all subsets of different sizes, showing the mean and 97\% confidence interval of the heavy output probability.}
 
-\end{center}
+		\vspace{0.6em}
 
+	\end{minipage}
+	\hfill
+	\begin{minipage}[t]{0.49\linewidth}
+	\vspace{0pt}
+		\includegraphics[width=\linewidth]{../results/aggregated_qv_grid.pdf}
+		\small \textbf{Aggregated QV margin for each qubit, computed from all subsets containing it.} Each node participates in many connected subsets. For a given node $i$, we aggregate heavy output probabilities $\{\mu_j\}$ from all subsets $j$ containing $i$. \textbf{Mean score} is calculated as follows: $\bar{\mu}_i = \frac{1}{k_i} \sum_{j=1}^{k_i} \mu_j$. \textbf{Mean error} assumes independence $\sigma_i = \sqrt{\sum_{j=1}^{k_i} \sigma_j^2}\,/\,k_i$. \textbf{Lower confidence bound} takes into account the confidence interval of $2\sigma$. Finally, we compute the \textbf{QV margin} by subtracting the QV threshold of $\frac{2}{3}$ from the lower confidence bound. Note that subsets overlap, so errors are not fully independent; 
+		the uncertainty is therefore slightly underestimated.
 
-\vspace{-0.2em}
-\begin{center}
-    \includegraphics[width=0.9\linewidth,keepaspectratio]{../results/best_worst_grid.png}
-    
-    \small Best and worst performing subsets across subset sizes
+		\vspace{0.6em}
+		
+		\input{../results/correlation_table.tex}
 
-\end{center}
+		\vspace{0.6em}
+
+		\small \textbf{Correlation of qubit-level metrics with the aggregated QV margin for each qubit.}
+
+		\vspace{0.6em}
+
+		
+	\end{minipage}
+
+	\includegraphics[width=\linewidth]{../results/node_metric_correlations_q3.pdf}
+
+	\includegraphics[width=\linewidth]{../results/node_metric_correlations_q6.pdf}
+
+	\small \textbf{Correlation of qubit-level metrics with the aggregated QV margin for each qubit.} The first line conatins correlations for subsets of size 3, the second line for subsets of size 6. The correlation values are generally higher for smaller subsets, which is expected as they are more sensitive to noise and errors. The most strongly correlated metrics are readout error, measurement preparation errors, and gate errors, while coherence times ($T_1$ and $T_2$) show weaker correlations.
 
 }
+
 
 \end{poster}
 \end{document}

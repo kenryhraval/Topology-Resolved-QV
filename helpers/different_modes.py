@@ -86,7 +86,7 @@ def plot_mode_comparison_grid(G, pos, dfs_by_mode, q, z_97=Z_97, qv_threshold=QV
     cbar2.ax.yaxis.set_major_formatter(PercentFormatter(xmax=1.0))
 
     fig.suptitle(f"Without and with optimisation comparison for $n={q}$", fontsize=16)
-    fig.savefig("results/optimisation_comparison.png", bbox_inches="tight")
+    fig.savefig("results/optimisation_comparison.pdf", bbox_inches="tight")
     plt.show()
     plt.close(fig)
 

@@ -178,9 +178,9 @@ def plot_best_worst_grid(G, pos, dfs_by_q):
     sm.set_array([])
     fig.colorbar(sm, cax=cax, label="Subset mean HOP")
 
-    fig.suptitle("Best and worst subsets across sizes", fontsize=16)
+    # plt.title(r"Best and worst QV subsets across qubit counts $n$")
 
-    fig.savefig("results/best_worst_grid.png", dpi=300, bbox_inches="tight")
+    fig.savefig("results/best_worst_grid.pdf", bbox_inches="tight")
     plt.show()
     plt.close(fig)
 

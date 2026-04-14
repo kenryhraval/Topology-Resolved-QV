@@ -1,12 +1,5 @@
 from qiskit_experiments.library import QuantumVolume
-from qiskit.transpiler import CouplingMap
 import pandas as pd
-
-
-def induced_submap_physical(full_coupling_map, subset):
-    subset = set(subset)
-    edges = [(a, b) for a, b in full_coupling_map if a in subset and b in subset]
-    return CouplingMap(edges)
 
 
 def _make_qv(ideal_backend, subset, seed):
@@ -35,11 +28,12 @@ def _two_qubit_gate_count(qc):
 
 def _collect_stats(qc):
     counts = dict(qc.count_ops())
+    active = sorted({qc.find_bit(q).index for inst in qc.data for q in inst.qubits})
 
     return {
         "depth": qc.depth(),
         "size": qc.size(),
-        "width": qc.width(),
+        "active_qubits": len(active),
         "num_nonlocal_gates": qc.num_nonlocal_gates(),
         "two_qubit_gates": _two_qubit_gate_count(qc),
         "measure_ops": counts.get("measure", 0),
@@ -51,24 +45,19 @@ def _collect_stats(qc):
     }
 
 
-def compare_circuits(backend, ideal_backend, subset, shots, trials, seed):
+def compare_circuits(backend, ideal_backend, subset, seed):
     subset = tuple(subset)
-    sub_cmap = induced_submap_physical(backend.coupling_map, subset)
 
     experiments = {
-        "induced_optimised": _make_qv(ideal_backend, subset, trials, seed),
-        "induced_regular": _make_qv(ideal_backend, subset, trials, seed),
-        "full_optimised": _make_qv(ideal_backend, subset, trials, seed),
-        "full_regular": _make_qv(ideal_backend, subset, trials, seed),
+        "optimised": _make_qv(ideal_backend, subset, seed),
+        "regular": _make_qv(ideal_backend, subset, seed),
     }
 
     for exp in experiments.values():
-        exp.set_run_options(shots=shots)
+        exp.set_run_options(shots=1)
 
-    _set_opts(experiments["induced_optimised"], sub_cmap, "sabre", "sabre", 3, seed)
-    _set_opts(experiments["induced_regular"],   sub_cmap, "trivial", "basic", 0, seed)
-    _set_opts(experiments["full_optimised"],    backend.coupling_map, "sabre", "sabre", 3, seed)
-    _set_opts(experiments["full_regular"],      backend.coupling_map, "trivial", "basic", 0, seed)
+    _set_opts(experiments["optimised"], backend.coupling_map, "sabre", "sabre", 3, seed)
+    _set_opts(experiments["regular"],   backend.coupling_map, "trivial", "basic", 0, seed)
 
     rows = []
 
@@ -79,6 +68,4 @@ def compare_circuits(backend, ideal_backend, subset, shots, trials, seed):
         row.update(_collect_stats(qc))
         rows.append(row)
 
-    df = pd.DataFrame(rows)
-    return df
-
+    return pd.DataFrame(rows)

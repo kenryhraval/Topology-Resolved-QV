@@ -76,9 +76,10 @@ def plot_qv_success_fraction_grid(G, pos, dfs_by_q, z_97=Z_97, qv_threshold=QV_T
     cbar = fig.colorbar(sm, cax=cax, label="Successful subsets (lower bound > 2/3)")
     cbar.ax.yaxis.set_major_formatter(PercentFormatter(xmax=1.0))
 
-    fig.suptitle("Node QV success fraction across subset sizes", fontsize=16)
+    # plt.title(r"Qubit QV success fraction across subset sizes $n$")
+
     plt.show()
 
-    fig.savefig("results/success_fraction_grid.png", bbox_inches="tight")
+    fig.savefig("results/success_fraction_grid.pdf", bbox_inches="tight")
     plt.close(fig)
 

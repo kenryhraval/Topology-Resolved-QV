@@ -95,10 +95,10 @@ def plot_aggregated_qv_grid(G, pos, dfs_by_q, z_97=Z_97, qv_threshold=QV_THRESHO
     sm.set_array([])
     fig.colorbar(sm, cax=cax, label="Aggregated QV margin (lower bound − 2/3)")
 
-    fig.suptitle("Aggregated QV margin across subset sizes", fontsize=16)
+    # plt.title(r"Aggregated QV margin across subset sizes $n$")
 
     plt.show()
 
-    fig.savefig("results/aggregated_qv_grid.png", bbox_inches="tight")
+    fig.savefig("results/aggregated_qv_grid.pdf", bbox_inches="tight")
     plt.close(fig)
     
