@@ -39,7 +39,7 @@ all qubits and connections on a NISQ device are of the same quality; thus even i
 such success often relies on selecting a good qubit subset, which is not trivial to identify. This fact slightly
 compromises the original intuitive appeal of the QV measure: passing a QV $2^m$ test does not necessarily
 imply that the device will generally handle any circuit of depth and width m well because it may not start
-with a good qubit subset choice. [1]
+with a good qubit subset choice. [1] 
 
 
 What we’re doing — enumerating subsets — is actually the missing step that vendors do internally. IBM explicitly notes that QV usually highlights a subset of the best-performing qubits on a device rather than representing the entire processor. [5]

@@ -44,6 +44,14 @@ def compute_node_margin(G, df, z_97=Z_97, qv_threshold=QV_THRESHOLD):
 
 
 def plot_aggregated_qv_grid(G, pos, dfs_by_q, z_97=Z_97, qv_threshold=QV_THRESHOLD):
+    plt.rcParams.update({
+        "font.size": 18,
+        "axes.titlesize": 22,
+        "axes.labelsize": 20,
+        "xtick.labelsize": 16,
+        "ytick.labelsize": 16,
+    })
+
     margins_by_q = {}
 
     for q, df in dfs_by_q.items():
@@ -58,7 +66,6 @@ def plot_aggregated_qv_grid(G, pos, dfs_by_q, z_97=Z_97, qv_threshold=QV_THRESHO
     norm = plt.Normalize(vmin=-vmax, vmax=vmax)
     cmap = plt.cm.coolwarm
 
-    # ---- KEY CHANGE: gridspec with colorbar column ----
     fig = plt.figure(figsize=(18, 10), constrained_layout=True)
     gs = fig.add_gridspec(2, 3, width_ratios=[1, 1, 0.05])
 
@@ -69,9 +76,8 @@ def plot_aggregated_qv_grid(G, pos, dfs_by_q, z_97=Z_97, qv_threshold=QV_THRESHO
         fig.add_subplot(gs[1, 1]),
     ]
 
-    cax = fig.add_subplot(gs[:, 2])  # colorbar axis (full height)
+    cax = fig.add_subplot(gs[:, 2])
 
-    # ---- plotting ----
     for ax, q in zip(axes, sorted(dfs_by_q.keys())):
         nodes, margin = margins_by_q[q]
         colors = cmap(norm(margin))
@@ -82,23 +88,21 @@ def plot_aggregated_qv_grid(G, pos, dfs_by_q, z_97=Z_97, qv_threshold=QV_THRESHO
             ax=ax,
             node_color=colors,
             with_labels=True,
-            node_size=350,
-            width=1,
+            node_size=550,
+            width=1.5,
             font_size=9,
         )
 
-        ax.set_title(f"{q}-qubit subsets")
+        ax.set_title(f"{q}-qubit subsets", fontsize=22)
         ax.set_axis_off()
 
-    # ---- colorbar on the side ----
     sm = plt.cm.ScalarMappable(norm=norm, cmap=cmap)
     sm.set_array([])
-    fig.colorbar(sm, cax=cax, label="Aggregated QV margin (lower bound − 2/3)")
-
-    # plt.title(r"Aggregated QV margin across subset sizes $n$")
-
-    plt.show()
+    cbar = fig.colorbar(sm, cax=cax)
+    cbar.set_label("Aggregated QV margin (lower bound − 2/3)", fontsize=20)
+    cbar.ax.tick_params(labelsize=16)
 
     fig.savefig("results/aggregated_qv_grid.pdf", bbox_inches="tight")
+    plt.show()
     plt.close(fig)
     

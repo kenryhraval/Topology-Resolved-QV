@@ -78,6 +78,14 @@ def plot_qv_success_fraction_grid(G, pos, dfs_by_q, z_97=Z_97, qv_threshold=QV_T
 
     # plt.title(r"Qubit QV success fraction across subset sizes $n$")
 
+    plt.rcParams.update({
+        "font.size": 18,
+        "axes.titlesize": 22,
+        "axes.labelsize": 20,
+        "xtick.labelsize": 16,
+        "ytick.labelsize": 16,
+    })
+
     plt.show()
 
     fig.savefig("results/success_fraction_grid.pdf", bbox_inches="tight")

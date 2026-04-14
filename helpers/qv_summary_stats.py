@@ -78,7 +78,16 @@ def plot_qv_summary_stats(q_values=range(3, 7), max_experiment_n=8):
     plt.xlim(3, max_experiment_n)
     plt.ylim(0.45, 0.90)
     plt.margins(x=0)
-    plt.legend(fontsize=9)
+    plt.legend(fontsize=14)
+
+    plt.rcParams.update({
+        "font.size": 18,
+        "axes.titlesize": 18,
+        "axes.labelsize": 18,
+        "xtick.labelsize": 18,
+        "ytick.labelsize": 18,
+    })
+
     plt.tight_layout()
     plt.savefig(pdf, bbox_inches="tight")
     plt.show()

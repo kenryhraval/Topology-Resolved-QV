@@ -82,6 +82,14 @@ def draw_best_worst_overlay(ax, G, pos, best, worst):
 
 
 def plot_best_worst_grid(G, pos, dfs_by_q):
+    plt.rcParams.update({
+        "font.size": 18,
+        "axes.titlesize": 22,
+        "axes.labelsize": 20,
+        "xtick.labelsize": 16,
+        "ytick.labelsize": 16,
+    })
+
     fig = plt.figure(figsize=(18, 10), constrained_layout=True)
     gs = fig.add_gridspec(2, 3, width_ratios=[1, 1, 0.05])
 
@@ -92,18 +100,16 @@ def plot_best_worst_grid(G, pos, dfs_by_q):
         fig.add_subplot(gs[1, 1]),
     ]
 
-    cax = fig.add_subplot(gs[:, 2])  # shared colorbar axis
+    cax = fig.add_subplot(gs[:, 2])
 
-    # shared HOP scale
     norm = plt.Normalize(vmin=0.5, vmax=0.875)
-    cmap = plt.cm.coolwarm  # or viridis if you prefer
+    cmap = plt.cm.coolwarm
 
     for ax, q in zip(axes, sorted(dfs_by_q.keys())):
         df = dfs_by_q[q]
 
         best, worst = best_worst_subsets(df)
 
-        # base graph
         nx.draw(
             G,
             pos,
@@ -111,12 +117,11 @@ def plot_best_worst_grid(G, pos, dfs_by_q):
             node_color="#d9d9d9",
             edge_color="#bfbfbf",
             with_labels=True,
-            node_size=350,
-            width=0.8,
+            node_size=550,
+            width=1.2,
             font_size=9,
         )
 
-        # worst (draw first)
         for i in range(len(worst)):
             subset = set(worst.iloc[i]["subset"])
             hop = float(worst.iloc[i]["mean_HOP"])
@@ -126,7 +131,7 @@ def plot_best_worst_grid(G, pos, dfs_by_q):
                 G, pos,
                 nodelist=list(subset),
                 node_color=[color],
-                node_size=360,
+                node_size=580,
                 ax=ax,
                 alpha=0.9,
             )
@@ -135,11 +140,10 @@ def plot_best_worst_grid(G, pos, dfs_by_q):
                 G, pos,
                 edgelist=[(u, v) for u, v in G.edges() if u in subset and v in subset],
                 edge_color=[color],
-                width=2.5,
+                width=3.0,
                 ax=ax,
             )
 
-        # best (on top)
         for i in range(len(best)):
             subset = set(best.iloc[i]["subset"])
             hop = float(best.iloc[i]["mean_HOP"])
@@ -149,7 +153,7 @@ def plot_best_worst_grid(G, pos, dfs_by_q):
                 G, pos,
                 nodelist=list(subset),
                 node_color=[color],
-                node_size=360,
+                node_size=580,
                 ax=ax,
                 alpha=0.95,
             )
@@ -158,27 +162,18 @@ def plot_best_worst_grid(G, pos, dfs_by_q):
                 G, pos,
                 edgelist=[(u, v) for u, v in G.edges() if u in subset and v in subset],
                 edge_color=[color],
-                width=2.5,
+                width=3.0,
                 ax=ax,
             )
 
-        # best_val = float(best.iloc[0]["mean_HOP"])
-        # worst_val = float(worst.iloc[0]["mean_HOP"])
-
-        ax.set_title(
-            f"{q}-qubit subsets\n",
-            # f"best: {best_val:.3f}, worst: {worst_val:.3f}",
-            fontsize=10,
-        )
-
+        ax.set_title(f"{q}-qubit subsets", fontsize=22)
         ax.set_axis_off()
 
-    # ---- ONE shared colorbar (like your original) ----
     sm = plt.cm.ScalarMappable(norm=norm, cmap=cmap)
     sm.set_array([])
-    fig.colorbar(sm, cax=cax, label="Subset mean HOP")
-
-    # plt.title(r"Best and worst QV subsets across qubit counts $n$")
+    cbar = fig.colorbar(sm, cax=cax)
+    cbar.set_label("Subset mean HOP", fontsize=20)
+    cbar.ax.tick_params(labelsize=16)
 
     fig.savefig("results/best_worst_grid.pdf", bbox_inches="tight")
     plt.show()

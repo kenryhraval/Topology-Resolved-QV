@@ -89,16 +89,17 @@
 }
 
 \headerbox{Problem}{name=problem,column=0,row=0}{
-\begin{itemize}\compresslist
-\item NISQ devices have useful scale, but are limited by noise and lack fault tolerance.
-\item Performance depends on qubit quality, connectivity, and compilation overhead.
-\item Therefore, system-level benchmarks are needed in addition to gate-level metrics.
-\end{itemize}
- One such benchmark is quantum volume, which assesses only a limited subset of best-quality qubits within a quantum processor. We study how quantum volume depends on \emph{where} a circuit is placed on a chip, not only on the chip as a whole.
+	\begin{itemize}\compresslist
+		\item NISQ devices have useful scale, but are limited by noise and lack fault tolerance.
+		\item Performance depends on qubit quality, connectivity, and compilation overhead.
+		\item Therefore, system-level benchmarks are needed in addition to gate-level metrics.
+	\end{itemize}
+	\vspace{-0.5em}
+	One such benchmark is \emph{quantum volume}. Standard quantum volume reports performance for a favorable qubit subset within a quantum processor, but does not reveal how performance varies across the chip. We quantify that variation.
 }
 
 \headerbox{Quantum volume}{name=definitions,column=0,below=problem}{
-    Quantum volume (QV) is a \textbf{system level benchmark}. The QV is a single number figure of merit used to evaluate universal gate-based quantum computers. 
+    Quantum volume (QV) is a \textbf{system level benchmark}. QV is a single number figure of merit used to evaluate universal gate-based quantum computers. 
 
     \begin{center}
         \includegraphics[width=\linewidth]{images/qv-process.png}
@@ -106,11 +107,11 @@
         \small \textbf{The QV circuit~\cite{qv_benchmark_zoo}}
     \end{center}
 
-    If the quantum computer samples a distribution from the \textbf{heavy set of outputs} (simulated classically) with probability $> 2/3$, it validates the corresponding quantum volume score of $2^n$. The confidence interval for this evaluation is set to $2\sigma$ ($97.7\%$).
+    If the quantum computer samples a distribution from the \textbf{heavy set of outputs} (simulated classically) with probability $> 2/3$, it validates the corresponding quantum volume score of $2^n$. The confidence interval for this evaluation is set to $2\sigma$ ($97.7\%$). \cite{cross2019qv}
 }
 
 \headerbox{\emph{Heavy set of outputs}}{name=models,column=0,below=definitions}{
-    Let $\mathbf{Q}$ be a random circuit drawn from a suitable ensemble acting on $n$ qubits. The quantum state after executing the circuit is denoted $|\psi\rangle$. Each possible output state $x\in\{0,1\}^n$ is measured with probability $|\langle x|\psi\rangle|^2$. The set of output states with a probability greater than the median constitutes the heavy set of outputs associated with the quantum circuit $\mathbf{Q}$.
+    Let $\mathbf{Q}$ be a random circuit drawn from a suitable ensemble acting on $n$ qubits. The quantum state after executing the circuit is denoted $|\psi\rangle$. Each possible output state $x\in\{0,1\}^n$ is measured with probability $|\langle x|\psi\rangle|^2$. The set of output states with a probability greater than the median constitutes the heavy set of outputs associated with the quantum circuit $\mathbf{Q}$. \cite{qv_benchmark_zoo}
 }
 
 \headerbox{References}{name=references,column=0,below=models}{
@@ -126,8 +127,26 @@ Quantum Benchmark Zoo:
 \emph{Quantum Volume}.
 Available at: \url{https://quantumbenchmarkzoo.org}
 (accessed 2026-04-12).
+
+\bibitem{ibm_layer_fidelity}
+IBM Quantum,  
+\emph{Updating how we measure quantum quality and speed}, 2023.  
+\url{https://www.ibm.com/quantum/blog/quantum-metric-layer-fidelity}
+
+\bibitem{pelofske2022qv}
+E.~Pelofske, A.~B{\"a}rtschi, S.~Eidenbenz,  
+\emph{Quantum Volume in Practice}, 2022.  
+\url{https://arxiv.org/abs/2203.03816}
+
+\bibitem{cross2019qv}
+A.~W. Cross et al.,  
+\emph{Validating quantum computers using randomized model circuits}, 2019.  
+\url{https://arxiv.org/abs/1811.12926}
+
 \end{thebibliography}
 }
+
+
 
 \headerbox{Acknowledgements}{name=acknowledgements,column=0,below=references, above=bottom}{
 \smaller						% Make the whole text smaller
@@ -136,7 +155,8 @@ This work was supported by the University of Latvia student research funding, ai
 } 
 
 \headerbox{Research methodology}{name=density,span=2,column=1,row=0}{
-We benchmarked QV on the IBM Marrakesh device using calibration data and the coupling graph from Qiskit. First, we construct a noisy quantum simulator from the extracted data. Then we enumerate all connected subgraphs of size $n \leq 6$ and run QV circuits on each subgraph. Finally, we compute the heavy output probability and confidence for each placement.
+We benchmarked QV using calibration data and the coupling graph from the IBM Marrakesh device. First, we construct a noisy quantum simulator from the extracted data using \texttt{Qiskit} library. Then we enumerate all connected subgraphs of size $n \leq 6$ and run QV circuits on each subgraph. Finally, we compute the heavy output probability and confidence for each placement. Similar approach is also explored in literature but quantum computers have advanced since then.~\cite{pelofske2022qv} What we’re doing – enumerating subsets – is actually the missing step that vendors do internally. IBM explicitly notes that QV usually highlights a subset of the best-performing qubits on a device rather than representing the entire processor.~\cite{ibm_layer_fidelity} We also perform QV aggregation for each qubit and analyse its correlation with known metrics to understand which error types are most impactful. To our knowledge, this analysis has not been emphasized in prior QV studies.
+
 }
 
 \headerbox{Productivity of qubit subsets varies significantly}
@@ -144,18 +164,20 @@ We benchmarked QV on the IBM Marrakesh device using calibration data and the cou
 
 	\begin{minipage}[t]{0.49\linewidth}
 	\vspace{0pt}
-		\includegraphics[width=\linewidth]{../results/best_worst_grid.pdf}
-		\small \textbf{The best and worst HOP wise performing subsets of different subset sizes.} Comparison makes the topology dependence clear: some regions of the chip are much better than others.
-
-		\vspace{0.6em}
 
 		\includegraphics[width=\linewidth]{../results/success_fraction_grid.pdf}
-		\small \textbf{Empiric probability that a qubit is part of a subset that passes the QV test over different subset sizes.} The success-fraction plot highlights that not all connected subsets of the same size perform equally well.
+		\small \textbf{Probability that a qubit belongs to a subset passing the QV test across different $n$.} 
 
 		\vspace{0.6em}
 
-		\includegraphics[width=\linewidth]{../results/qv_summary_stats.pdf}
-		\small \textbf{Statistics of all subsets of different sizes, showing the mean and 97\% confidence interval of the heavy output probability.}
+		\includegraphics[width=\linewidth]{../results/best_worst_grid.pdf}
+		\small \textbf{Best- and worst-performing connected subsets at each size.} The plot shows that subsets of equal size can exhibit markedly different performance depending on their location on the chip.
+
+		\vspace{0.6em}
+
+		\includegraphics[width=\linewidth]{../results/aggregated_qv_grid.pdf}
+		\small \textbf{QV margin for each qubit, computed from all subsets containing it.} For a given node $i$, we aggregate heavy output probabilities $\{\mu_j\}$ from all subsets $j$ containing $i$. \textbf{Aggregated QV} and its corresponding error are calculated as follows: $\bar{\mu}_i = \frac{1}{k_i} \sum_{j=1}^{k_i} \mu_j$, 
+
 
 		\vspace{0.6em}
 
@@ -163,20 +185,22 @@ We benchmarked QV on the IBM Marrakesh device using calibration data and the cou
 	\hfill
 	\begin{minipage}[t]{0.49\linewidth}
 	\vspace{0pt}
-		\includegraphics[width=\linewidth]{../results/aggregated_qv_grid.pdf}
-		\small \textbf{Aggregated QV margin for each qubit, computed from all subsets containing it.} Each node participates in many connected subsets. For a given node $i$, we aggregate heavy output probabilities $\{\mu_j\}$ from all subsets $j$ containing $i$. \textbf{Mean score} is calculated as follows: $\bar{\mu}_i = \frac{1}{k_i} \sum_{j=1}^{k_i} \mu_j$. \textbf{Mean error} assumes independence $\sigma_i = \sqrt{\sum_{j=1}^{k_i} \sigma_j^2}\,/\,k_i$. \textbf{Lower confidence bound} takes into account the confidence interval of $2\sigma$. Finally, we compute the \textbf{QV margin} by subtracting the QV threshold of $\frac{2}{3}$ from the lower confidence bound. Note that subsets overlap, so errors are not fully independent; 
-		the uncertainty is therefore slightly underestimated.
+
+		$\sigma_i = \sqrt{\sum_{j=1}^{k_i} \sigma_j^2}\,/\,k_i$. \textbf{Lower bound} takes into account the confidence interval of $2\sigma$, subtracting it from the aggregated QV. Finally, we compute the \textbf{QV margin} by subtracting the QV threshold of $\frac{2}{3}$ from the lower bound. 
 
 		\vspace{0.6em}
-		
+
 		\input{../results/correlation_table.tex}
 
 		\vspace{0.6em}
 
-		\small \textbf{Correlation of qubit-level metrics with the aggregated QV margin for each qubit.}
+		\small \textbf{Correlation of qubit-level metrics with the aggregated QV for each qubit.}
 
 		\vspace{0.6em}
 
+		\includegraphics[width=\linewidth]{../results/qv_summary_stats.pdf}
+		\small \textbf{Heavy output probability (HOP) statistics across connected subsets of different sizes, compared with the standard QV experiment.} Shown are the subset mean and median with 97\% confidence intervals, together with the min. and max. HOP values. While the standard QV experiment passes up to $n=8$, subset-level analysis shows strong variation in performance: although the mean HOP can exceed the threshold, its lower confidence bound does not for any tested size. The median does exceed the threshold for $n=4$, $5$ with confidence, indicating that more than half of subsets of those sizes pass.
+		\vspace{1em}
 		
 	\end{minipage}
 
@@ -184,8 +208,7 @@ We benchmarked QV on the IBM Marrakesh device using calibration data and the cou
 
 	\includegraphics[width=\linewidth]{../results/node_metric_correlations_q6.pdf}
 
-	\small \textbf{Correlation of qubit-level metrics with the aggregated QV margin for each qubit.} The first line conatins correlations for subsets of size 3, the second line for subsets of size 6. The correlation values are generally higher for smaller subsets, which is expected as they are more sensitive to noise and errors. The most strongly correlated metrics are readout error, measurement preparation errors, and gate errors, while coherence times ($T_1$ and $T_2$) show weaker correlations.
-
+	\small \textbf{Correlation between qubit-level calibration metrics and aggregated mean score.} The top row corresponds to subsets of size 3, and the bottom row to subsets of size 6. Correlations are generally stronger for smaller subsets, which are more sensitive to local noise sources, whereas larger subsets accumulate more complex error contributions. Readout and measurement preparation errors show the strongest correlation with performance, while coherence times ($T_1$ and $T_2$) exhibit weaker influence.
 }
 
 

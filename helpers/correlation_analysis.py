@@ -55,7 +55,6 @@ def plot_node_metric_correlations(
     x_cols = [
         "T1",
         "T2",
-            # "readout_error",
         "Prob meas0 prep1",
         "Prob meas1 prep0",
         "id_error",
@@ -66,7 +65,6 @@ def plot_node_metric_correlations(
     ]
 
     pretty_names = {
-        # "readout_error": "Readout error",
         "x_error": "$X$ error",
         "sx_error": "$\\sqrt{X}$ error",
         "pauli_x_error": "Pauli-$X$ error",
@@ -84,11 +82,10 @@ def plot_node_metric_correlations(
         sub = df_all[df_all["q"] == q]
 
         ncols = len(x_cols)
-
         fig, axes = plt.subplots(
             1,
             ncols,
-            figsize=(4 * ncols, 4),
+            figsize=(4.2 * ncols, 4.5),
             constrained_layout=True,
         )
 
@@ -97,28 +94,36 @@ def plot_node_metric_correlations(
 
         for j, xcol in enumerate(x_cols):
             ax = axes[j]
+            label = pretty_names.get(xcol, xcol)
 
             plot_df = sub[[xcol, y_col]].dropna()
 
             if plot_df.empty:
-                ax.set_title(f"{pretty_names.get(xcol, xcol)}\nno data")
-                ax.set_xlabel(pretty_names.get(xcol, xcol))
-                ax.set_ylabel(y_col)
+                ax.set_title(f"{label}\nno data", fontsize=20)
+                ax.set_xlabel(label, fontsize=18)
+                if j == 0:
+                    ax.set_ylabel("Mean score", fontsize=18)
+                ax.tick_params(axis="both", labelsize=14)
                 continue
 
             x = plot_df[xcol].to_numpy()
             y = plot_df[y_col].to_numpy()
 
-            ax.scatter(x, y)
+            ax.scatter(x, y, s=36)
 
             if len(plot_df) >= 2 and np.unique(x).size > 1 and np.unique(y).size > 1:
                 r = np.corrcoef(x, y)[0, 1]
-                ax.set_title(f"{pretty_names.get(xcol, xcol)}\nr = {r:.2f}")
+                ax.set_title(f"{label}\n$r={r:.2f}$", fontsize=20)
             else:
-                ax.set_title(f"{pretty_names.get(xcol, xcol)}\nconstant")
+                ax.set_title(f"{label}\nconstant", fontsize=20)
 
-            ax.set_xlabel(pretty_names.get(xcol, xcol))
-            ax.set_ylabel(y_col)
+            ax.set_xlabel(label, fontsize=18)
+            if j == 0:
+                ax.set_ylabel("Mean score", fontsize=18)
+            else:
+                ax.set_ylabel("")
+
+            ax.tick_params(axis="both", labelsize=14)
 
         fig.savefig(f"results/node_metric_correlations_q{q}.pdf", bbox_inches="tight")
         plt.close(fig)
